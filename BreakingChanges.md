@@ -15,3 +15,4 @@
 
 ### Blob:
 - Separated lease_container and lease_blob into unique methods for each lease action.
+- Refactored the blob service into a block blob and page blob service.

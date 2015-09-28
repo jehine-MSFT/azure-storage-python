@@ -18,3 +18,4 @@
 - Added snapshot support for the get_blob_properties API.
 - Separated lease_container and lease_blob into unique methods for each lease action.
 - Added access condition support for all applicable APIs.
+- Refactored the blob service into a block blob and page blob service.
