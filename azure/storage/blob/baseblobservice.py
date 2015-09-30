@@ -1,4 +1,4 @@
-#-------------------------------------------------------------------------
+﻿#-------------------------------------------------------------------------
 # Copyright (c) Microsoft.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,7 +21,6 @@ from .._common_error import (
     _validate_not_none,
     _validate_type_bytes,
     _ERROR_VALUE_NEGATIVE,
-    _ERROR_PAGE_BLOB_SIZE_ALIGNMENT,
 )
 from .._common_conversion import (
     _encode_base64,
@@ -29,10 +28,7 @@ from .._common_conversion import (
     _str,
     _str_or_none,
 )
-from abc import (
-    ABCMeta,
-    abstractmethod
-)
+from abc import ABCMeta
 from .._common_serialization import (
     _convert_class_to_xml,
     _get_request_body,
@@ -93,10 +89,6 @@ if sys.version_info >= (3,):
 else:
     from cStringIO import StringIO as BytesIO
 
-# Keep this value sync with _ERROR_PAGE_BLOB_SIZE_ALIGNMENT
-_PAGE_SIZE = 512
-
-
 class BaseBlobService(_StorageClient):
 
     '''
@@ -111,8 +103,6 @@ class BaseBlobService(_StorageClient):
                  timeout=DEFAULT_HTTP_TIMEOUT, sas_token=None, connection_string=None,
                  request_session=None):
         '''
-        blob_type:
-            Blob type used for all operations in this service.
         account_name:
             your storage account name, required for all operations.
         account_key:
@@ -197,7 +187,8 @@ class BaseBlobService(_StorageClient):
         return url
 
     def generate_shared_access_signature(self, container_name, blob_name=None,
-                                         shared_access_policy=None,
+                                         shared_access_policy=None, ip=None,
+                                         protocol=None,
                                          sas_version=X_MS_VERSION,
                                          cache_control=None,
                                          content_disposition=None,
@@ -214,6 +205,14 @@ class BaseBlobService(_StorageClient):
             Optional. Name of blob.
         shared_access_policy:
             Instance of SharedAccessPolicy class.
+        ip:
+            Specifies an IP address or a range of IP addresses from which to accept requests.
+            If the IP address from which the request originates does not match the IP address
+            or address range specified on the SAS token, the request is not authenticated.
+        protocol:
+            Specifies the protocol permitted for a request made. Possible values are
+            both HTTPS and HTTP (https,http) or HTTPS only (https). The default value
+            is https,http. Note that HTTP only is not a permitted value.
         sas_version:
             x-ms-version for storage service, or None to get a signed query
             string compatible with pre 2012-02-12 clients, where the version
@@ -248,9 +247,12 @@ class BaseBlobService(_StorageClient):
 
         sas = SharedAccessSignature(self.account_name, self.account_key)
         return sas.generate_signed_query_string(
+            'blob',
             resource_path,
             resource_type,
             shared_access_policy,
+            ip,
+            protocol,
             sas_version,
             cache_control,
             content_disposition,

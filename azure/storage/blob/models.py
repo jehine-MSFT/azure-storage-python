@@ -248,3 +248,6 @@ class BlobTypes(object):
 
     '''Page blob type.'''
     PageBlob = 'PageBlob'
+
+    '''Append blob type.'''
+    AppendBlob = 'AppendBlob'

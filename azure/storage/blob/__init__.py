@@ -38,3 +38,4 @@ from .models import (
 
 from .blockblobservice import BlockBlobService
 from .pageblobservice import PageBlobService
+from .appendblobservice import AppendBlobService
