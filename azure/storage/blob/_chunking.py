@@ -215,7 +215,7 @@ class _AppendBlobChunkUploader(_BlobChunkUploader):
             self.blob_name,
             chunk_data,
             x_ms_lease_id=self.x_ms_lease_id,
-            x_ms_blob_condition_appendpos=chunk_offset
+            x_ms_blob_condition_maxsize=self.x_ms_blob_condition_maxsize,
         )
 
 def _download_blob_chunks(blob_service, container_name, blob_name,
@@ -249,7 +249,7 @@ def _download_blob_chunks(blob_service, container_name, blob_name,
 def _upload_blob_chunks(blob_service, container_name, blob_name,
                         blob_size, block_size, stream, max_connections,
                         max_retries, retry_wait, progress_callback,
-                        x_ms_lease_id, uploader_class):
+                        x_ms_lease_id, uploader_class, x_ms_blob_condition_maxsize=None):
     uploader = uploader_class(
         blob_service,
         container_name,
@@ -263,6 +263,8 @@ def _upload_blob_chunks(blob_service, container_name, blob_name,
         progress_callback,
         x_ms_lease_id,
     )
+
+    uploader.x_ms_blob_condition_maxsize = x_ms_blob_condition_maxsize
 
     if progress_callback is not None:
         progress_callback(0, blob_size)

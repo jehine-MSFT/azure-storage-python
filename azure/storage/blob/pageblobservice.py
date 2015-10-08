@@ -39,7 +39,7 @@ from ._chunking import (
 from .models import (
     PageList,
     PageRange,
-    BlobTypes,
+    _BlobTypes,
 )
 from ..constants import (
     BLOB_SERVICE_HOST_BASE,
@@ -48,7 +48,7 @@ from ..constants import (
     X_MS_VERSION,
 )
 from ._serialization import _update_storage_blob_header
-from .baseblobservice import BaseBlobService
+from ._baseblobservice import BaseBlobService
 from os import path
 import sys
 if sys.version_info >= (3,):
@@ -94,7 +94,7 @@ class PageBlobService(BaseBlobService):
             Optional. Session object to use for http requests. If this is
             specified, it replaces the default use of httplib.
         '''
-        self.blob_type = BlobTypes.PageBlob
+        self.blob_type = _BlobTypes.PageBlob
         super(PageBlobService, self).__init__(
             account_name, account_key, protocol, host_base, dev_host,
             timeout, sas_token, connection_string, request_session)

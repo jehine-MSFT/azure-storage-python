@@ -199,7 +199,7 @@ class StoragePageBlobTest(StorageTestCase):
         rand = random.Random(self.checksum)
         size = self.bs._BLOB_MAX_DATA_SIZE + 12345
         text = u''
-        words = [u'hello', u'world', u'python', u'?????']
+        words = [u'hello', u'world', u'python', u'啊齄丂狛狜']
         while (len(text) < size):
             index = rand.randint(0, len(words) - 1)
             text = text + u' ' + words[index]

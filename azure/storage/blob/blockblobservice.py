@@ -35,7 +35,7 @@ from ._chunking import (
     _BlockBlobChunkUploader,
     _upload_blob_chunks,
 )
-from .models import BlobTypes
+from .models import _BlobTypes
 from ..constants import (
     BLOB_SERVICE_HOST_BASE,
     DEFAULT_HTTP_TIMEOUT,
@@ -47,7 +47,7 @@ from ._serialization import (
     _convert_response_to_block_list,
     _update_storage_blob_header,
 )
-from .baseblobservice import BaseBlobService
+from ._baseblobservice import BaseBlobService
 from os import path
 import sys
 if sys.version_info >= (3,):
@@ -90,7 +90,7 @@ class BlockBlobService(BaseBlobService):
             Optional. Session object to use for http requests. If this is
             specified, it replaces the default use of httplib.
         '''
-        self.blob_type = BlobTypes.BlockBlob
+        self.blob_type = _BlobTypes.BlockBlob
         super(BlockBlobService, self).__init__(
             account_name, account_key, protocol, host_base, dev_host,
             timeout, sas_token, connection_string, request_session)

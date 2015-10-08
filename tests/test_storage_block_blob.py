@@ -221,7 +221,7 @@ class StorageBlockBlobTest(StorageTestCase):
         rand = random.Random(self.checksum)
         size = self.bs._BLOB_MAX_DATA_SIZE + 12345
         text = u''
-        words = [u'hello', u'world', u'python', u'?????']
+        words = [u'hello', u'world', u'python', u'啊齄丂狛狜']
         while (len(text) < size):
             index = rand.randint(0, len(words) - 1)
             text = text + u' ' + words[index]
@@ -336,7 +336,7 @@ class StorageBlockBlobTest(StorageTestCase):
 
         # Act
         with self.assertRaises(TypeError):
-            resp = self.bs.put_block(self.container_name, 'blob1', u'??', '1')
+            resp = self.bs.put_block(self.container_name, 'blob1', u'啊齄丂狛狜', '1')
 
         # Assert
 
@@ -996,7 +996,7 @@ class StorageBlockBlobTest(StorageTestCase):
         # Arrange
         self._create_container(self.container_name)
         blob_name = 'blob1'
-        text = u'hello ????? world'
+        text = u'hello 啊齄丂狛狜 world'
         data = text.encode('utf-8')
 
         # Act
@@ -1013,7 +1013,7 @@ class StorageBlockBlobTest(StorageTestCase):
         # Arrange
         self._create_container(self.container_name)
         blob_name = 'blob1'
-        text = u'hello ????? world'
+        text = u'hello 啊齄丂狛狜 world'
         data = text.encode('utf-16')
 
         # Act
@@ -1030,7 +1030,7 @@ class StorageBlockBlobTest(StorageTestCase):
         # Arrange
         self._create_container(self.container_name)
         blob_name = 'blob1'
-        text = u'hello ????? world'
+        text = u'hello 啊齄丂狛狜 world'
         data = text.encode('utf-16')
 
         # Act

@@ -117,10 +117,10 @@ class SharedAccessSignature(object):
             Name of table.
         '''
         query_dict = self._generate_signed_query_dict(
-            service=service,
-            path=path,
-            resource_type=resource_type,
-            shared_access_policy=shared_access_policy,
+            service,
+            path,
+            resource_type,
+            shared_access_policy,
             ip=ip,
             protocol=protocol,
             version=version,

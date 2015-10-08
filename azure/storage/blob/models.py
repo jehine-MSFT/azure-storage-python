@@ -240,7 +240,7 @@ class LeaseActions(object):
     '''Change the lease ID.'''
     Change = 'change'
 
-class BlobTypes(object):
+class _BlobTypes(object):
     '''Blob type options'''
 
     '''Block blob type.'''

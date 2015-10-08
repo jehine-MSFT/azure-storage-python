@@ -19,11 +19,8 @@ from .._common_error import (
     _dont_fail_not_exist,
     _dont_fail_on_exist,
     _validate_not_none,
-    _validate_type_bytes,
-    _ERROR_VALUE_NEGATIVE,
 )
 from .._common_conversion import (
-    _encode_base64,
     _int_or_none,
     _str,
     _str_or_none,
@@ -32,7 +29,6 @@ from abc import ABCMeta
 from .._common_serialization import (
     _convert_class_to_xml,
     _get_request_body,
-    _get_request_body_bytes_only,
     _parse_response_for_dict,
     _parse_response_for_dict_filter,
     _parse_response_for_dict_prefix,
@@ -40,12 +36,7 @@ from .._common_serialization import (
     _ETreeXmlToObject,
 )
 from .._http import HTTPRequest
-from ._chunking import (
-    _BlockBlobChunkUploader,
-    _PageBlobChunkUploader,
-    _download_blob_chunks,
-    _upload_blob_chunks,
-)
+from ._chunking import _download_blob_chunks
 from ..models import (
     SignedIdentifiers,
     StorageServiceProperties,
@@ -53,8 +44,6 @@ from ..models import (
 from .models import (
     Container,
     ContainerEnumResults,
-    PageList,
-    PageRange,
     LeaseActions,
 )
 from ..auth import (
@@ -71,8 +60,6 @@ from ..constants import (
 )
 from .._serialization import _convert_signed_identifiers_to_xml
 from ._serialization import (
-    _convert_block_list_to_xml,
-    _convert_response_to_block_list,
     _create_blob_result,
     _parse_blob_enum_results_list,
     _update_storage_blob_header,
@@ -209,6 +196,8 @@ class BaseBlobService(_StorageClient):
             Specifies an IP address or a range of IP addresses from which to accept requests.
             If the IP address from which the request originates does not match the IP address
             or address range specified on the SAS token, the request is not authenticated.
+            For example, specifying sip=168.1.5.65 or sip=168.1.5.60-168.1.5.70 on the SAS
+            restricts the request to those IP addresses.
         protocol:
             Specifies the protocol permitted for a request made. Possible values are
             both HTTPS and HTTP (https,http) or HTTPS only (https). The default value
