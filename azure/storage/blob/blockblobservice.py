@@ -47,7 +47,7 @@ from ._serialization import (
     _convert_response_to_block_list,
     _update_storage_blob_header,
 )
-from ._baseblobservice import BaseBlobService
+from ._baseblobservice import _BaseBlobService
 from os import path
 import sys
 if sys.version_info >= (3,):
@@ -56,7 +56,7 @@ else:
     from cStringIO import StringIO as BytesIO
 
 
-class BlockBlobService(BaseBlobService):
+class BlockBlobService(_BaseBlobService):
 
     def __init__(self, account_name=None, account_key=None, protocol='https',
                  host_base=BLOB_SERVICE_HOST_BASE, dev_host=DEV_BLOB_HOST,

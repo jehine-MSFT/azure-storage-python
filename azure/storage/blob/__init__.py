@@ -33,7 +33,6 @@ from .models import (
     ContainerSharedAccessPermissions,
     BlobSharedAccessPermissions,
     LeaseActions,
-    _BlobTypes,
 )
 
 from .blockblobservice import BlockBlobService

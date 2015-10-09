@@ -76,12 +76,13 @@ if sys.version_info >= (3,):
 else:
     from cStringIO import StringIO as BytesIO
 
-class BaseBlobService(_StorageClient):
+class _BaseBlobService(_StorageClient):
 
     '''
     This is the main class managing Blob resources.
     '''
 
+    __metaclass__ = ABCMeta
     _BLOB_MAX_DATA_SIZE = 64 * 1024 * 1024
     _BLOB_MAX_CHUNK_DATA_SIZE = 4 * 1024 * 1024
 
@@ -124,7 +125,7 @@ class BaseBlobService(_StorageClient):
             protocol = connection_params.protocol.lower()
             host_base = connection_params.host_base_blob
             
-        super(BaseBlobService, self).__init__(
+        super(_BaseBlobService, self).__init__(
             account_name, account_key, protocol, host_base, dev_host, timeout, sas_token, request_session)
 
         if self.account_key:
@@ -148,13 +149,13 @@ class BaseBlobService(_StorageClient):
             Name of blob.
         account_name:
             Name of the storage account. If not specified, uses the account
-            specified when BaseBlobService was initialized.
+            specified when _BaseBlobService was initialized.
         protocol:
             Protocol to use: 'http' or 'https'. If not specified, uses the
-            protocol specified when BaseBlobService was initialized.
+            protocol specified when _BaseBlobService was initialized.
         host_base:
             Live host base url.  If not specified, uses the host base specified
-            when BaseBlobService was initialized.
+            when _BaseBlobService was initialized.
         sas_token:
             Shared access signature token created with
             generate_shared_access_signature.
@@ -184,7 +185,7 @@ class BaseBlobService(_StorageClient):
                                          content_type=None):
         '''
         Generates a shared access signature for the container or blob.
-        Use the returned signature with the sas_token parameter of BaseBlobService.
+        Use the returned signature with the sas_token parameter of _BaseBlobService.
 
         container_name:
             Required. Name of container.

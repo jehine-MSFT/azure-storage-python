@@ -87,7 +87,10 @@ class StorageAppendBlobTest(StorageTestCase):
             except:
                 pass
 
-        for tmp_file in ['blob_input.temp.dat', 'blob_output.temp.dat']:
+        for tmp_file in ['blob_input.temp.dat',
+                         'blob_input1.temp.dat',
+                         'blob_input2.temp.dat',
+                         'blob_output.temp.dat']:
             if os.path.isfile(tmp_file):
                 try:
                     os.remove(tmp_file)

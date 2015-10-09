@@ -43,7 +43,7 @@ from ..constants import (
 )
 from azure.common import AzureMissingResourceHttpError
 from ._serialization import _update_storage_blob_header
-from ._baseblobservice import BaseBlobService
+from ._baseblobservice import _BaseBlobService
 from os import path
 import sys
 if sys.version_info >= (3,):
@@ -52,7 +52,7 @@ else:
     from cStringIO import StringIO as BytesIO
 
 
-class AppendBlobService(BaseBlobService):
+class AppendBlobService(_BaseBlobService):
 
     def __init__(self, account_name=None, account_key=None, protocol='https',
                  host_base=BLOB_SERVICE_HOST_BASE, dev_host=DEV_BLOB_HOST,
@@ -92,12 +92,12 @@ class AppendBlobService(BaseBlobService):
             timeout, sas_token, connection_string, request_session)
 
     def put_blob(self, container_name, blob_name, content_encoding=None,
-                 content_language=None, content_md5=None, cache_control=None,
-                 x_ms_blob_content_type=None,
-                 x_ms_blob_content_language=None, x_ms_blob_content_md5=None,
-                 x_ms_blob_cache_control=None, x_ms_meta_name_values=None,
-                 x_ms_lease_id=None, if_modified_since=None,
-                 if_unmodified_since=None, if_match=None, if_none_match=None):
+                 content_language=None, cache_control=None,
+                 x_ms_blob_content_type=None, x_ms_blob_content_language=None,
+                 x_ms_blob_content_md5=None, x_ms_blob_cache_control=None,
+                 x_ms_meta_name_values=None, x_ms_lease_id=None,
+                 if_modified_since=None, if_unmodified_since=None,
+                 if_match=None, if_none_match=None):
         '''
         Creates a blob or overrides an existing blob. Use if_match=* to
         prevent overriding an existing blob. 
@@ -117,12 +117,6 @@ class AppendBlobService(BaseBlobService):
             can use this value when returned to decode the blob content.
         content_language:
             Optional. Specifies the natural languages used by this resource.
-        content_md5:
-            Optional. An MD5 hash of the blob content. This hash is used to
-            verify the integrity of the blob during transport. When this header
-            is specified, the storage service checks the hash that has arrived
-            with the one that was sent. If the two hashes do not match, the
-            operation will fail with error code 400 (Bad Request).
         cache_control:
             Optional. The Blob service stores this value but does not use or
             modify it.
@@ -157,7 +151,6 @@ class AppendBlobService(BaseBlobService):
             ('x-ms-blob-type', _str_or_none(self.blob_type)),
             ('Content-Encoding', _str_or_none(content_encoding)),
             ('Content-Language', _str_or_none(content_language)),
-            ('Content-MD5', _str_or_none(content_md5)),
             ('Cache-Control', _str_or_none(cache_control)),
             ('x-ms-blob-content-type', _str_or_none(x_ms_blob_content_type)),
             ('x-ms-blob-content-language',
@@ -251,14 +244,14 @@ class AppendBlobService(BaseBlobService):
 
     def append_blob_from_path(
         self, container_name, blob_name, file_path,
-        create_if_not_exist=True, content_encoding=None,
-        content_language=None, content_md5=None, cache_control=None,
-        x_ms_blob_content_type=None, x_ms_blob_content_language=None,
-        x_ms_blob_content_md5=None, x_ms_blob_cache_control=None,
-        x_ms_meta_name_values=None, x_ms_blob_condition_maxsize=None,
-        x_ms_lease_id=None, progress_callback=None, max_retries=5,
-        retry_wait=1.0, if_modified_since=None, if_unmodified_since=None,
-        if_match=None, if_none_match=None):
+        content_encoding=None, content_language=None,
+        cache_control=None, x_ms_blob_content_type=None,
+        x_ms_blob_content_language=None, x_ms_blob_content_md5=None,
+        x_ms_blob_cache_control=None, x_ms_meta_name_values=None,
+        x_ms_blob_condition_maxsize=None, x_ms_lease_id=None,
+        progress_callback=None, max_retries=5, retry_wait=1.0,
+        if_modified_since=None, if_unmodified_since=None, if_match=None,
+        if_none_match=None, create_if_not_exist=True):
         '''
         Appends to the content of an existing blob from a file path, with automatic
         chunking and progress notifications. If blob doesn't exist, a new blob will
@@ -277,25 +270,24 @@ class AppendBlobService(BaseBlobService):
             can use this value when returned to decode the blob content.
         content_language:
             Optional. Specifies the natural languages used by this resource.
-        content_md5:
-            Optional. An MD5 hash of the blob content. This hash is used to
-            verify the integrity of the blob during transport. When this header
-            is specified, the storage service checks the hash that has arrived
-            with the one that was sent. If the two hashes do not match, the
-            operation will fail with error code 400 (Bad Request).
         cache_control:
             Optional. The Blob service stores this value but does not use or
             modify it.
         x_ms_blob_content_type:
-            Optional. Set the blob's content type.
+            Set the blob's content type, if blob doesn't exist and
+            create_if_not_exists is true.
         x_ms_blob_content_language:
-            Optional. Set the blob's content language.
+            Set the blob's content language, if blob doesn't exist and
+            create_if_not_exists is true.
         x_ms_blob_content_md5:
-            Optional. Set the blob's MD5 hash.
+            Set the blob's MD5 hash, if blob doesn't exist and
+            create_if_not_exists is true.
         x_ms_blob_cache_control:
-            Optional. Sets the blob's cache control.
+            Sets the blob's cache control, if blob doesn't exist and
+            create_if_not_exists is true.
         x_ms_meta_name_values:
-            A dict containing name, value for metadata.
+            A dict containing name, value pairs for setting blob metadata, if blob
+            doesn't exist and create_if_not_exists is true.
         x_ms_blob_condition_maxsize:
             Optional conditional header. The max length in bytes permitted for
             the append blob. If the Append Block operation would cause the blob
@@ -313,13 +305,17 @@ class AppendBlobService(BaseBlobService):
         retry_wait:
             Sleep time in secs between retries.
         if_modified_since:
-            Optional. Datetime string.
+            Datetime string, if blob doesn't exist and
+            create_if_not_exists is true.
         if_unmodified_since:
-            Optional. DateTime string.
+            DateTime string, if blob doesn't exist and
+            create_if_not_exists is true.
         if_match:
-            Optional. An ETag value.
+            An ETag value, if blob doesn't exist and
+            create_if_not_exists is true.
         if_none_match:
-            Optional. An ETag value.
+            An ETag value, if blob doesn't exist and
+            create_if_not_exists is true.
         create_if_not_exist:
             Indicates if a blob should be created for the append block operation if
             the blob doesn't already exist.
@@ -337,7 +333,6 @@ class AppendBlobService(BaseBlobService):
                 count=count,
                 content_encoding=content_encoding,
                 content_language=content_language,
-                content_md5=content_md5,
                 cache_control=cache_control,
                 x_ms_blob_content_type=x_ms_blob_content_type,
                 x_ms_blob_content_language=x_ms_blob_content_language,
@@ -357,7 +352,7 @@ class AppendBlobService(BaseBlobService):
 
     def append_blob_from_bytes(
         self, container_name, blob_name, blob, index=0, count=None,
-        content_encoding=None, content_language=None, content_md5=None,
+        content_encoding=None, content_language=None,
         cache_control=None, x_ms_blob_content_type=None,
         x_ms_blob_content_language=None, x_ms_blob_content_md5=None,
         x_ms_blob_cache_control=None, x_ms_meta_name_values=None,
@@ -388,25 +383,24 @@ class AppendBlobService(BaseBlobService):
             can use this value when returned to decode the blob content.
         content_language:
             Optional. Specifies the natural languages used by this resource.
-        content_md5:
-            Optional. An MD5 hash of the blob content. This hash is used to
-            verify the integrity of the blob during transport. When this header
-            is specified, the storage service checks the hash that has arrived
-            with the one that was sent. If the two hashes do not match, the
-            operation will fail with error code 400 (Bad Request).
         cache_control:
             Optional. The Blob service stores this value but does not use or
             modify it.
         x_ms_blob_content_type:
-            Optional. Set the blob's content type.
+            Set the blob's content type, if blob doesn't exist and
+            create_if_not_exists is true.
         x_ms_blob_content_language:
-            Optional. Set the blob's content language.
+            Set the blob's content language, if blob doesn't exist and
+            create_if_not_exists is true.
         x_ms_blob_content_md5:
-            Optional. Set the blob's MD5 hash.
+            Set the blob's MD5 hash, if blob doesn't exist and
+            create_if_not_exists is true.
         x_ms_blob_cache_control:
-            Optional. Sets the blob's cache control.
+            Sets the blob's cache control, if blob doesn't exist and
+            create_if_not_exists is true.
         x_ms_meta_name_values:
-            A dict containing name, value for metadata.
+            A dict containing name, value pairs for setting blob metadata, if blob
+            doesn't exist and create_if_not_exists is true.
         x_ms_blob_condition_maxsize:
             Optional conditional header. The max length in bytes permitted for
             the append blob. If the Append Block operation would cause the blob
@@ -424,13 +418,17 @@ class AppendBlobService(BaseBlobService):
         retry_wait:
             Sleep time in secs between retries.
         if_modified_since:
-            Optional. Datetime string.
+            Datetime string, if blob doesn't exist and
+            create_if_not_exists is true.
         if_unmodified_since:
-            Optional. DateTime string.
+            DateTime string, if blob doesn't exist and
+            create_if_not_exists is true.
         if_match:
-            Optional. An ETag value.
+            An ETag value, if blob doesn't exist and
+            create_if_not_exists is true.
         if_none_match:
-            Optional. An ETag value.
+            An ETag value, if blob doesn't exist and
+            create_if_not_exists is true.
         create_if_not_exist:
             Indicates if a blob should be created for the append block operation if
             the blob doesn't already exist.
@@ -457,7 +455,6 @@ class AppendBlobService(BaseBlobService):
             count=count,
             content_encoding=content_encoding,
             content_language=content_language,
-            content_md5=content_md5,
             cache_control=cache_control,
             x_ms_blob_content_type=x_ms_blob_content_type,
             x_ms_blob_content_language=x_ms_blob_content_language,
@@ -477,7 +474,7 @@ class AppendBlobService(BaseBlobService):
 
     def append_blob_from_text(
         self, container_name, blob_name, text, text_encoding='utf-8',
-        content_encoding=None, content_language=None, content_md5=None,
+        content_encoding=None, content_language=None,
         cache_control=None, x_ms_blob_content_type=None,
         x_ms_blob_content_language=None, x_ms_blob_content_md5=None,
         x_ms_blob_cache_control=None, x_ms_meta_name_values=None,
@@ -505,25 +502,24 @@ class AppendBlobService(BaseBlobService):
             can use this value when returned to decode the blob content.
         content_language:
             Optional. Specifies the natural languages used by this resource.
-        content_md5:
-            Optional. An MD5 hash of the blob content. This hash is used to
-            verify the integrity of the blob during transport. When this header
-            is specified, the storage service checks the hash that has arrived
-            with the one that was sent. If the two hashes do not match, the
-            operation will fail with error code 400 (Bad Request).
         cache_control:
             Optional. The Blob service stores this value but does not use or
             modify it.
         x_ms_blob_content_type:
-            Optional. Set the blob's content type.
+            Set the blob's content type, if blob doesn't exist and
+            create_if_not_exists is true.
         x_ms_blob_content_language:
-            Optional. Set the blob's content language.
+            Set the blob's content language, if blob doesn't exist and
+            create_if_not_exists is true.
         x_ms_blob_content_md5:
-            Optional. Set the blob's MD5 hash.
+            Set the blob's MD5 hash, if blob doesn't exist and
+            create_if_not_exists is true.
         x_ms_blob_cache_control:
-            Optional. Sets the blob's cache control.
+            Sets the blob's cache control, if blob doesn't exist and
+            create_if_not_exists is true.
         x_ms_meta_name_values:
-            A dict containing name, value for metadata.
+            A dict containing name, value pairs for setting blob metadata, if blob
+            doesn't exist and create_if_not_exists is true.
         x_ms_blob_condition_maxsize:
             Optional conditional header. The max length in bytes permitted for
             the append blob. If the Append Block operation would cause the blob
@@ -541,13 +537,17 @@ class AppendBlobService(BaseBlobService):
         retry_wait:
             Sleep time in secs between retries.
         if_modified_since:
-            Optional. Datetime string.
+            Datetime string, if blob doesn't exist and
+            create_if_not_exists is true.
         if_unmodified_since:
-            Optional. DateTime string.
+            DateTime string, if blob doesn't exist and
+            create_if_not_exists is true.
         if_match:
-            Optional. An ETag value.
+            An ETag value, if blob doesn't exist and
+            create_if_not_exists is true.
         if_none_match:
-            Optional. An ETag value.
+            An ETag value, if blob doesn't exist and
+            create_if_not_exists is true.
         create_if_not_exist:
             Indicates if a blob should be created for the append block operation if
             the blob doesn't already exist.
@@ -568,7 +568,6 @@ class AppendBlobService(BaseBlobService):
             count=len(text),
             content_encoding=content_encoding,
             content_language=content_language,
-            content_md5=content_md5,
             cache_control=cache_control,
             x_ms_blob_content_type=x_ms_blob_content_type,
             x_ms_blob_content_language=x_ms_blob_content_language,
@@ -589,7 +588,7 @@ class AppendBlobService(BaseBlobService):
     def append_blob_from_stream(
         self, container_name, blob_name, stream, count=None,
         content_encoding=None, content_language=None,
-        content_md5=None, cache_control=None, x_ms_blob_content_type=None,
+        cache_control=None, x_ms_blob_content_type=None,
         x_ms_blob_content_language=None, x_ms_blob_content_md5=None,
         x_ms_blob_cache_control=None, x_ms_meta_name_values=None,
         x_ms_blob_condition_maxsize=None,
@@ -617,27 +616,26 @@ class AppendBlobService(BaseBlobService):
             can use this value when returned to decode the blob content.
         content_language:
             Optional. Specifies the natural languages used by this resource.
-        content_md5:
-            Optional. An MD5 hash of the blob content. This hash is used to
-            verify the integrity of the blob during transport. When this header
-            is specified, the storage service checks the hash that has arrived
-            with the one that was sent. If the two hashes do not match, the
-            operation will fail with error code 400 (Bad Request).
         cache_control:
             Optional. The Blob service stores this value but does not use or
             modify it.
         x_ms_blob_content_type:
-            Optional. Set the blob's content type.
+            Set the blob's content type, if blob doesn't exist and
+            create_if_not_exists is true.
         x_ms_blob_content_language:
-            Optional. Set the blob's content language.
+            Set the blob's content language, if blob doesn't exist and
+            create_if_not_exists is true.
         x_ms_blob_content_md5:
-            Optional. Set the blob's MD5 hash.
+            Set the blob's MD5 hash, if blob doesn't exist and
+            create_if_not_exists is true.
         x_ms_blob_cache_control:
-            Optional. Sets the blob's cache control.
+            Sets the blob's cache control, if blob doesn't exist and
+            create_if_not_exists is true.
         x_ms_meta_name_values:
-            A dict containing name, value for metadata.
+            A dict containing name, value pairs for setting blob metadata,
+            if blob doesn't exist and create_if_not_exists is true.
         x_ms_blob_condition_maxsize:
-            Optional conditional header. The max length in bytes permitted for
+            Conditional header. The max length in bytes permitted for
             the append blob. If the Append Block operation would cause the blob
             to exceed that limit or if the blob size is already greater than the
             value specified in this header, the request will fail with
@@ -653,13 +651,17 @@ class AppendBlobService(BaseBlobService):
         retry_wait:
             Sleep time in secs between retries.
         if_modified_since:
-            Optional. Datetime string.
+            Datetime string. Used if blob doesn't exist and
+            create_if_not_exists is true.
         if_unmodified_since:
-            Optional. DateTime string.
+            DateTime string. Used if blob doesn't exist and
+            create_if_not_exists is true.
         if_match:
-            Optional. An ETag value.
+            An ETag value. Used if blob doesn't exist and
+            create_if_not_exists is true.
         if_none_match:
-            Optional. An ETag value.
+            An ETag value. Used if blob doesn't exist and
+            create_if_not_exists is true.
         create_if_not_exist:
             Indicates if a blob should be created for the append block operation if
             the blob doesn't already exist.
@@ -669,32 +671,27 @@ class AppendBlobService(BaseBlobService):
         _validate_not_none('stream', stream)
         _validate_not_none('create_if_not_exist', create_if_not_exist)
         
-        
         if create_if_not_exist:
             try:
                 self.get_blob_properties(container_name, blob_name)
             except AzureMissingResourceHttpError:
-                if create_if_not_exist: 
-                    self.put_blob(
-                        container_name=container_name,
-                        blob_name=blob_name,
-                        content_encoding=content_encoding,
-                        content_language=content_language,
-                        content_md5=content_md5,
-                        cache_control=cache_control,
-                        x_ms_blob_content_type=x_ms_blob_content_type,
-                        x_ms_blob_content_language=x_ms_blob_content_language,
-                        x_ms_blob_content_md5=x_ms_blob_content_md5,
-                        x_ms_blob_cache_control=x_ms_blob_cache_control,
-                        x_ms_meta_name_values=x_ms_meta_name_values,
-                        x_ms_lease_id=x_ms_lease_id,
-                        if_modified_since=if_modified_since,
-                        if_unmodified_since=if_unmodified_since,
-                        if_match=if_match,
-                        if_none_match=if_none_match,
-                    )
-                else:
-                    raise
+                self.put_blob(
+                    container_name=container_name,
+                    blob_name=blob_name,
+                    content_encoding=content_encoding,
+                    content_language=content_language,
+                    cache_control=cache_control,
+                    x_ms_blob_content_type=x_ms_blob_content_type,
+                    x_ms_blob_content_language=x_ms_blob_content_language,
+                    x_ms_blob_content_md5=x_ms_blob_content_md5,
+                    x_ms_blob_cache_control=x_ms_blob_cache_control,
+                    x_ms_meta_name_values=x_ms_meta_name_values,
+                    x_ms_lease_id=x_ms_lease_id,
+                    if_modified_since=if_modified_since,
+                    if_unmodified_since=if_unmodified_since,
+                    if_match=if_match,
+                    if_none_match=if_none_match,
+                )
 
         _upload_blob_chunks(
             blob_service=self,

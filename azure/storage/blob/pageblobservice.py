@@ -48,7 +48,7 @@ from ..constants import (
     X_MS_VERSION,
 )
 from ._serialization import _update_storage_blob_header
-from ._baseblobservice import BaseBlobService
+from ._baseblobservice import _BaseBlobService
 from os import path
 import sys
 if sys.version_info >= (3,):
@@ -60,7 +60,7 @@ else:
 _PAGE_SIZE = 512
 
 
-class PageBlobService(BaseBlobService):
+class PageBlobService(_BaseBlobService):
     
     def __init__(self, account_name=None, account_key=None, protocol='https',
                  host_base=BLOB_SERVICE_HOST_BASE, dev_host=DEV_BLOB_HOST,
@@ -100,8 +100,7 @@ class PageBlobService(BaseBlobService):
             timeout, sas_token, connection_string, request_session)
 
     def put_blob(self, container_name, blob_name, x_ms_blob_content_length,
-                 content_encoding=None, content_language=None,
-                 content_md5=None, cache_control=None,
+                 content_encoding=None, content_language=None, cache_control=None,
                  x_ms_blob_content_type=None, x_ms_blob_content_encoding=None,
                  x_ms_blob_content_language=None, x_ms_blob_content_md5=None,
                  x_ms_blob_cache_control=None, x_ms_meta_name_values=None,
@@ -130,12 +129,6 @@ class PageBlobService(BaseBlobService):
             can use this value when returned to decode the blob content.
         content_language:
             Optional. Specifies the natural languages used by this resource.
-        content_md5:
-            Optional. An MD5 hash of the blob content. This hash is used to
-            verify the integrity of the blob during transport. When this header
-            is specified, the storage service checks the hash that has arrived
-            with the one that was sent. If the two hashes do not match, the
-            operation will fail with error code 400 (Bad Request).
         cache_control:
             Optional. The Blob service stores this value but does not use or
             modify it.
@@ -176,7 +169,6 @@ class PageBlobService(BaseBlobService):
             ('x-ms-blob-type', _str_or_none(self.blob_type)),
             ('Content-Encoding', _str_or_none(content_encoding)),
             ('Content-Language', _str_or_none(content_language)),
-            ('Content-MD5', _str_or_none(content_md5)),
             ('Cache-Control', _str_or_none(cache_control)),
             ('x-ms-blob-content-type', _str_or_none(x_ms_blob_content_type)),
             ('x-ms-blob-content-encoding',
@@ -378,7 +370,7 @@ class PageBlobService(BaseBlobService):
 
     def put_blob_from_path(self, container_name, blob_name, file_path,
                            content_encoding=None, content_language=None,
-                           content_md5=None, cache_control=None,
+                           cache_control=None,
                            x_ms_blob_content_type=None,
                            x_ms_blob_content_encoding=None,
                            x_ms_blob_content_language=None,
@@ -407,12 +399,6 @@ class PageBlobService(BaseBlobService):
             can use this value when returned to decode the blob content.
         content_language:
             Optional. Specifies the natural languages used by this resource.
-        content_md5:
-            Optional. An MD5 hash of the blob content. This hash is used to
-            verify the integrity of the blob during transport. When this header
-            is specified, the storage service checks the hash that has arrived
-            with the one that was sent. If the two hashes do not match, the
-            operation will fail with error code 400 (Bad Request).
         cache_control:
             Optional. The Blob service stores this value but does not use or
             modify it.
@@ -471,7 +457,6 @@ class PageBlobService(BaseBlobService):
                 count=count,
                 content_encoding=content_encoding,
                 content_language=content_language,
-                content_md5=content_md5,
                 cache_control=cache_control,
                 x_ms_blob_content_type=x_ms_blob_content_type,
                 x_ms_blob_content_encoding=x_ms_blob_content_encoding,
@@ -492,8 +477,7 @@ class PageBlobService(BaseBlobService):
 
     def put_blob_from_stream(self, container_name, blob_name, stream, count,
                            content_encoding=None, content_language=None,
-                           content_md5=None, cache_control=None,
-                           x_ms_blob_content_type=None,
+                           cache_control=None, x_ms_blob_content_type=None,
                            x_ms_blob_content_encoding=None,
                            x_ms_blob_content_language=None,
                            x_ms_blob_content_md5=None,
@@ -524,12 +508,6 @@ class PageBlobService(BaseBlobService):
             can use this value when returned to decode the blob content.
         content_language:
             Optional. Specifies the natural languages used by this resource.
-        content_md5:
-            Optional. An MD5 hash of the blob content. This hash is used to
-            verify the integrity of the blob during transport. When this header
-            is specified, the storage service checks the hash that has arrived
-            with the one that was sent. If the two hashes do not match, the
-            operation will fail with error code 400 (Bad Request).
         cache_control:
             Optional. The Blob service stores this value but does not use or
             modify it.
@@ -593,7 +571,6 @@ class PageBlobService(BaseBlobService):
             x_ms_blob_content_length=count,
             content_encoding=content_encoding,
             content_language=content_language,
-            content_md5=content_md5,
             cache_control=cache_control,
             x_ms_blob_content_type=x_ms_blob_content_type,
             x_ms_blob_content_encoding=x_ms_blob_content_encoding,
@@ -626,8 +603,7 @@ class PageBlobService(BaseBlobService):
 
     def put_blob_from_bytes(self, container_name, blob_name, blob,
                             index=0, count=None, content_encoding=None,
-                            content_language=None, content_md5=None,
-                            cache_control=None,
+                            content_language=None, cache_control=None,
                             x_ms_blob_content_type=None,
                             x_ms_blob_content_encoding=None,
                             x_ms_blob_content_language=None,
@@ -662,12 +638,6 @@ class PageBlobService(BaseBlobService):
             can use this value when returned to decode the blob content.
         content_language:
             Optional. Specifies the natural languages used by this resource.
-        content_md5:
-            Optional. An MD5 hash of the blob content. This hash is used to
-            verify the integrity of the blob during transport. When this header
-            is specified, the storage service checks the hash that has arrived
-            with the one that was sent. If the two hashes do not match, the
-            operation will fail with error code 400 (Bad Request).
         cache_control:
             Optional. The Blob service stores this value but does not use or
             modify it.
@@ -734,7 +704,6 @@ class PageBlobService(BaseBlobService):
             count=count,
             content_encoding=content_encoding,
             content_language=content_language,
-            content_md5=content_md5,
             cache_control=cache_control,
             x_ms_blob_content_type=x_ms_blob_content_type,
             x_ms_blob_content_encoding=x_ms_blob_content_encoding,
