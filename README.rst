@@ -3,7 +3,7 @@ Microsoft Azure Storage SDK for Python
 
 This project provides a client library in Python that makes it easy to
 consume Microsoft Azure Storage services. For documentation please see
-the Microsoft Azure `Python Developer Center`_ and our `ReadTheDocs`_ page.
+the Microsoft Azure `Python Developer Center`_ and our `GitHub.io`_ page.
 
     If you are looking for the Service Bus or Azure Management
     libraries, please visit
@@ -97,7 +97,7 @@ Download a zip of the code via GitHub or PyPi. Then, type:
 Minimum Requirements
 --------------------
 
--  Python 2.7, 3.3, or 3.4.
+-  Python 2.7, 3.3, 3.4, or 3.5.
 -  See setup.py for dependencies
 
 Usage
@@ -121,11 +121,11 @@ provided code.
 Contribute Code or Provide Feedback
 ===================================
 
-If you would like to become an active contributor to this project please
+If you would like to become an active contributor to this project, please
 follow the instructions provided in `Azure Projects Contribution
 Guidelines`_.
 
-If you encounter any bugs with the library please file an issue in the
+If you encounter any bugs with the library, please file an issue in the
 `Issues`_ section of the project.
 
 Learn More
@@ -134,10 +134,10 @@ Learn More
 -  `Python Developer Center`_
 -  `Azure Storage Service`_
 -  `Azure Storage Team Blog`_
--  `ReadTheDocs`_
+-  `GitHub.io`_
 
 .. _Python Developer Center: http://azure.microsoft.com/en-us/develop/python/
-.. _ReadTheDocs: http://azure-storage.readthedocs.org/en/latest/
+.. _GitHub.io: http://azure.github.io/azure-storage-python/
 .. _here: https://github.com/Azure/azure-storage-python/archive/master.zip
 .. _create an account: https://account.windowsazure.com/signup
 .. _Developer Forums on MSDN: http://social.msdn.microsoft.com/Forums/windowsazure/en-US/home?forum=windowsazuredata
